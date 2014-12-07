@@ -7,7 +7,7 @@
 - link - Symlink
 - absent - Deletes file if it exists
 
-```
+```bash
 file { '/root/motd':
 	ensure		=> present,
 	#content	=> 'this is my motd file managed by content',
@@ -43,12 +43,11 @@ https://docs.puppetlabs.com/references/latest/type.html#user
 **Example 2**
 
 ```bash
-        user { 'jeff':
-                ensure     => present,
-                shell      => '/bin/bash',
-                groups     => [ 'wheel', 'finance'],
-                managehome => true,
-        }
+user { 'jeff':
+	ensure		=> present,
+	shell		=> '/bin/bash',
+	groups		=> [ 'wheel', 'finance'],
+	managehome	=> true,
 }
 ```
 
@@ -56,7 +55,7 @@ https://docs.puppetlabs.com/references/latest/type.html#user
 
 https://docs.puppetlabs.com/references/latest/type.html#group
 
-```
+```bash
 group { 'wheel':
 	ensure => present,
 	members => 'admin', # Adds user to group instead of doing on user type resource
@@ -67,7 +66,7 @@ group { 'wheel':
 
 #### Package
 
-```
+```bash
 package { 'apache':
 	ensure => present,
 }
@@ -83,7 +82,7 @@ package { ['openssh','mysql']:
 How to make sure that package is installed before?
 Service name depending on distro
 
-```
+```bash
 service { 'sshd':
 	ensure => running,
 	enable => true, # Starts at boot time
@@ -92,7 +91,7 @@ service { 'sshd':
 
 Using factor variable to define a service
 
-```
+```bash
 case $osfamily { 
 	'RedHat': {
 		$ssh_name = ' sshd'
