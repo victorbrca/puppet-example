@@ -30,7 +30,7 @@ puppet cert list
 Sing one node from master
 
 ```
-puppet cert sign victorbrca2.mylabserver.com
+puppet cert sign puppetnode.mydomain.ca
 ```
 
 Sign all nodes
@@ -38,3 +38,6 @@ Sign all nodes
 ```
 puppet cert sign --all
 ```
+
+$$123$$
+

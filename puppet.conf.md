@@ -29,6 +29,10 @@ Where SSL certificates are kept. The default value is '$confdir/ssl'.
 
 `ssldir = $vardir/ssl`
 
+#### basemodulepath
+
+## ?
+
 ### `[master]`
 
 Used by puppet master and puppet cert command
@@ -45,7 +49,7 @@ Use the default_manifest setting to either change the default per-environment ma
 
 `default_manifest = `
 
-# CA Settings
+#### CA Settings
 
 #### certname
 

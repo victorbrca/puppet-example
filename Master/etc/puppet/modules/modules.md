@@ -2,17 +2,21 @@
 
 ### Folder Structure 
 
-```
-/etc/puppetlabs/puppet/modules/localusers
+/etc/puppet/modules/[module_name]
 
+Puppet Enterprise
+/etc/puppetlabs/puppet/modules/[module_name]
+
+```
 ├── files
 ├── manifests
 │   ├── groups
 │   │   ├── finance.pp (example)
-│   │   └── wheel.pps (example)
+│   │   └── wheel.pp (example)
 │   └── init.pp
 ├── templates
 └── tests
+    └── init.pp
 ```
 
 - files - Stores files needed by nodes
@@ -23,24 +27,23 @@
 #### init.pp
 ```
 class localusers {
-
+	user 
+...
 }
 ```
 
 #### groups/wheel.pp
+
 ```
 class localusers::groups::wheel {
-
+...
 }
 ```
+*** Note:***  *The "::" is autoload. Refers to subfolders in the main module*
 
-Inspect module files for syntax errors
+#### test/init.pp
 
 ```
-# puppet parser validate init.pp 
-# echo $?
-0
-
-# puppet parser validate groups/wheel.pp 
-Error: Could not parse for environment production: Syntax error at ':' at /etc/puppetlabs/puppet/modules/localusers/manifests/groups/wheel.pp:1
+include localusers
+include localusers::groups::wheel
 ```
