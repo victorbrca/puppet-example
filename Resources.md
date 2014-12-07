@@ -1,16 +1,5 @@
 # Resource Types
 
-
-
-
-
-
-
-
-
-
-## Resource Types
-
 #### file
 
 - file - Makes sure it's a normal file
@@ -19,20 +8,18 @@
 - absent - Deletes file if it exists
 
 ```
-class filedemo {
-	file { '/root/motd':
-		ensure  => present,
-		#content => 'this is my motd file managed by content',
-		source => 'puppet:///modules/filedemo/motd',
-		owner   => root,
-		group   => root,
-		mode    => '0644',
-	}
+file { '/root/motd':
+	ensure		=> present,
+	#content	=> 'this is my motd file managed by content',
+	source		=> 'puppet:///modules/filedemo/motd',
+	owner		=> root,
+	group		=> root,
+	mode		=> '0644',
+}
 
-	file { '/etc/motd':
-		ensure => link,
-		target => '/root/motd',
-	}
+file { '/etc/motd':
+	ensure	=> link,
+	target	=> '/root/motd',
 }
 ```
 
@@ -40,9 +27,10 @@ class filedemo {
 
 https://docs.puppetlabs.com/references/latest/type.html#user
 
-```
-class localusers {
-        user { 'admin':
+**Example 1**
+
+```bash
+ user { 'admin':
                 ensure     		=> present,
                 shell      		=> '/bin/bash',
                 home       		=> '/home/admin',
@@ -50,7 +38,11 @@ class localusers {
                 managehome		=> true, # ensures that home exists
                 password		=> '$6$.D6.L3YN$xElKED4RUc0y89PdUZK0Yd9EjPin7LRP9V105PWeH4orxrd.7gOFUK6P2AtwF/4oV5h.3sKEQpV9oOl.tEmuk1',
         }
+```
 
+**Example 2**
+
+```bash
         user { 'jeff':
                 ensure     => present,
                 shell      => '/bin/bash',
