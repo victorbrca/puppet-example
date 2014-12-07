@@ -7,7 +7,7 @@
 - link - Symlink
 - absent - Deletes file if it exists
 
-```bash
+```puppet
 file { '/root/motd':
 	ensure		=> present,
 	#content	=> 'this is my motd file managed by content',
@@ -23,13 +23,15 @@ file { '/etc/motd':
 }
 ```
 
+***Note:*** When using "source => puppet:///" the files should be readable by the remote user to download the file. Usually set it to '644'.
+
 #### User
 
 https://docs.puppetlabs.com/references/latest/type.html#user
 
 **Example 1**
 
-```bash
+```puppet
  user { 'admin':
                 ensure     		=> present,
                 shell      		=> '/bin/bash',
@@ -42,7 +44,7 @@ https://docs.puppetlabs.com/references/latest/type.html#user
 
 **Example 2**
 
-```bash
+```puppet
 user { 'jeff':
 	ensure		=> present,
 	shell		=> '/bin/bash',
@@ -55,7 +57,7 @@ user { 'jeff':
 
 https://docs.puppetlabs.com/references/latest/type.html#group
 
-```bash
+```puppet
 group { 'wheel':
 	ensure => present,
 	members => 'admin', # Adds user to group instead of doing on user type resource
@@ -66,7 +68,9 @@ group { 'wheel':
 
 #### Package
 
-```bash
+https://docs.puppetlabs.com/references/latest/type.html#package
+
+```puppet
 package { 'apache':
 	ensure => present,
 }
@@ -79,10 +83,12 @@ package { ['openssh','mysql']:
 
 #### Service
 
+https://docs.puppetlabs.com/references/latest/type.html#service
+
 How to make sure that package is installed before?
 Service name depending on distro
 
-```bash
+```puppet
 service { 'sshd':
 	ensure => running,
 	enable => true, # Starts at boot time
@@ -91,7 +97,7 @@ service { 'sshd':
 
 Using factor variable to define a service
 
-```bash
+```puppet
 case $osfamily { 
 	'RedHat': {
 		$ssh_name = ' sshd'
@@ -110,6 +116,116 @@ case $osfamily {
 	}
 }
 ```
+
+## Metaparameters
+
+#### require 
+
+https://docs.puppetlabs.com/references/latest/metaparameter.html#require
+
+Require the named resource to exist
+
+**Example (require)**
+
+This makes sure that the 'ssh' package is installed before the service is started. Note the capital 'P' when referencing the resource (package name).
+
+```puppet
+package { 'ssh':
+	name	=> 'openssh',
+	ensure	=> present,
+}
+
+service { 'sshd':
+	ensure	=> running,
+	enable	=> true,
+	require	=> Package['ssh'],
+}
+```
+
+#### before
+
+https://docs.puppetlabs.com/references/latest/metaparameter.html#before
+
+Apply this before a referenced resource is applyed.
+
+**Example (before)**
+
+Makes sure that the package is present before starting the service. Note the capital 'S' when refering the service. 
+
+```puppet
+package { 'ssh-package':
+	ensure	=> present,
+	before	=> Service['sshd'],
+}
+
+service { 'sshd':
+	ensure	=> running,
+	enable	=> true,
+}
+```
+
+#### subscribe
+
+https://docs.puppetlabs.com/references/latest/metaparameter.html#subscribe
+
+Listen to puppet changes on referenced resource
+
+**Example (subscribe)**
+
+Restarts the sshd service whenever puppet changes '/etc/ssh/sshd_config'.
+
+```puppet
+file { '/etc/ssh/sshd_config':
+	ensure	=> present,
+	source	=> 'puppet:///modules/ssh/ssh_config',
+}
+
+service { 'sshd':
+	ensure	=> running,
+	enable	=> true,
+	subscribe	=> File['/etc/ssh/sshd_config'],
+}
+```
+
+#### notify
+
+https://docs.puppetlabs.com/references/latest/metaparameter.html#notify
+
+Sends a notification when puppet changes the resource
+
+**Example (notify)**
+
+Sends a notify (restart) to the service 'sshd' whenever '/etc/ssh/sshd_config' changes
+
+```puppet
+file { '/etc/ssh/sshd_config':
+	ensure	=> present,
+	source	=> 'puppet:///modules/ssh/ssh_config',
+	notify	=> Service['sshd'],
+}
+
+service { 'sshd':
+	ensure	=> running,
+	enable	=> true,
+}
+```
+
+#### Other Metaparameters
+
+- **alias** - Creates an alias for a resource name
+- **audit** - Checks if an attribute for resource has changed since last run
+- **noop** - Tells the resource not to execute
+- **loglevel** - Valid values are debug, info, notice, warning, err, alert, emerg, crit, verbose.
+- **tag** - Sets a tag for a resource (can be used to execute resources with specific tags)
+
+
+
+
+
+
+
+
+
 
 
 

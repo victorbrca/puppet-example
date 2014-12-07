@@ -22,10 +22,10 @@ Puppet Enterprise
 - files - Stores files needed by nodes
 - manifests - Should always have a init.pp
 - templates - 
-- tests - 
+- tests - Used to test modules
 
 #### init.pp
-```
+```puppet
 class localusers {
 	user 
 ...
@@ -34,7 +34,7 @@ class localusers {
 
 #### groups/wheel.pp
 
-```
+```puppet
 class localusers::groups::wheel {
 ...
 }
@@ -43,7 +43,7 @@ class localusers::groups::wheel {
 
 #### test/init.pp
 
-```
+```puppet
 include localusers
 include localusers::groups::wheel
 ```

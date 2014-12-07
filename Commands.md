@@ -3,49 +3,39 @@
 
 #### puppet agent -t
 
-Check if node can connect to master (this also downloads all catalogs if cert is allowed)
+Check if node can connect to master. If the node cert is already authorized on the master, it will download the catalogue and apply.
 
-```
-puppet agent -t
-```
+**Syntax:** `puppet agent -t`
 
 #### puppet cert list
 
 Check on master nodes waiting for key
 
-```
-puppet cert list
-```
+**Syntax:** `puppet cert list`
 
 Show all know nodes and certificates
 
-```
-puppet cert list -a
-```
+**Syntax:** `puppet cert list -a`
 
 #### puppet cert sign
 
 Sign one node from master
 
-```
-puppet cert sign [node_hostname]
-```
+**Syntax:** `puppet cert sign [node_hostname]`
 
 Sign all nodes
 
-```
-puppet cert sign --all
-```
+**Syntax:** `puppet cert sign --all`
 
 #### puppet parser validate
 
 Inspect files for syntax errors (validates DSL syntax). It does not validate resources
 
-```
-puppet parser validate [file]
-```
+**Syntax:** `puppet parser validate [file]`
 
-```
+**Example:**
+
+```bash
 # puppet parser validate init.pp 
 # echo $?
 0
@@ -58,9 +48,11 @@ Error: Could not parse for environment production: Syntax error at ':' at /etc/p
 
 Run catalogue without applying (dry run)
 
-`puppet apply --noop [file]`
+**Syntax:** `puppet apply --noop [file]`
 
-```
+**Example:**
+
+```bash
 # puppet apply --noop init.pp 
 Notice: Compiled catalog for puppetmaster.mydomain.com in environment production in 0.28 seconds
 Notice: /Stage[main]/Localusers/User[admin]/ensure: current_value absent, should be present (noop)
@@ -73,9 +65,11 @@ Notice: Finished catalog run in 0.28 seconds
 
 Apply catalogue
 
-`# puppet apply [file]`
+**Syntax:** `puppet apply [file]`
 
-```
+**Example:**
+
+```bash
 # puppet apply init.pp 
 Notice: Compiled catalog for 
 in environment production in 0.48 seconds

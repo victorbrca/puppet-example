@@ -5,14 +5,14 @@
 
 Examples:
 
-```
+```puppet
 user { 'jeff':
 	ensure => present,
 	groups => [ 'wheel', 'finance'],
 }
 ```
 
-```
+```puppet
 package { ['openssh','mysql']:
 	ensure => present,
 }
@@ -20,10 +20,11 @@ package { ['openssh','mysql']:
 
 ## Conditional Statements
 
-#### case
+### case
 
-Format
-```
+**Format**
+
+```puppet
 case $test_variable { 
 	'[Match Pattern 1]': {
 		$result_variable = 'desired value 1'
@@ -42,7 +43,8 @@ case $test_variable {
 ```
 
 **Example 1**
-```
+
+```puppet
 case $osfamily { 
 	'RedHat': {
 		$ssh_name = ' sshd'
@@ -64,7 +66,7 @@ case $osfamily {
 
 **Example 2**
 
-```
+```puppet
 case $operatingsystem {
 	centos, redhat: { $service_name = 'ntpd' }
 	debian, ubuntu: { $service_name = 'ntp' }
@@ -81,3 +83,43 @@ service { 'ntp':
 	subscribe	=> File['ntp.conf'],
 }
 ```
+
+### if
+
+**Format**
+
+```puppet
+if condition {
+	code
+} elsif condition {
+	code
+} else {
+	code
+}
+```
+
+**Example**
+
+```puppet
+$apache = true
+
+if $apache {
+	file {'/etc/motd': ensure => present, content => 'Apache web server', }
+} else {
+	file {'/etc/motd': ensure => present, content => 'Unassigned server', }
+}
+```
+
+### unless
+
+**Example**
+```puppet
+Unless $memorytotal > 1024 {
+	$maxclient = 300
+}
+```
+
+
+
+
+
