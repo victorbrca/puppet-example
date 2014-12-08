@@ -22,6 +22,9 @@ package { ['openssh','mysql']:
 
 ### case
 
+- Do not require default matches (compiling will not fail)
+- Usefull for when setting a block of code of more than one variable
+
 **Format**
 
 ```puppet
@@ -50,7 +53,7 @@ case $osfamily {
 		$ssh_name = ' sshd'
 	}
 	'Debian': {
-		$ssh_name = ' ssh'
+		$ssh_name = 'ssh'
 	}
 	'default': {
 		Warning('OS family does not match')
@@ -81,6 +84,57 @@ service { 'ntp':
 	ensure		=> running,
 	enable		=> true,
 	subscribe	=> File['ntp.conf'],
+}
+```
+
+**Example 3**
+
+```puppet
+case $osfamily {
+                'RedHat': { $ssh_name = 'sshd' }
+                'Debian': { $ssh_name = 'ssh' }
+                default: { fail('OS not supported by puppet modle SSH') }
+}
+```
+### selector value
+
+- Should be used where a plain value is expected
+- Ideal for setting variables or attributes in line
+- If there's no match, puppet compiling will fail (while 'if statements' will not fail). So it's best practice to always use 'default'
+
+```puppet
+$ssh_name = $osfamily ? {
+	'RedHat'	=> 'sshd',
+	'Debian'	=> 'ssh',
+	default		=> 'value',
+}
+```
+
+**Example 1**
+
+***Note:*** If there's no match, it will fail as we don't have a default value
+
+```puppet
+$package = $osfamily ? {
+	'RedHat' => 'http',
+	'Debian'  => 'apache2',
+}
+
+package { $package:
+	ensure => installed,
+}
+```
+
+**Example 2**
+
+```puppet
+package { 'resource-title':
+	name => $::osfamily ? {
+		'RedHat' => 'http',
+		'Debian'  => 'apache2',
+		default    => 'httpd',
+	},
+	ensure => installed,
 }
 ```
 

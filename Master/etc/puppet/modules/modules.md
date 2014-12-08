@@ -41,7 +41,7 @@ class localusers::groups::wheel {
 ```
 *** Note:***  *The "::" is autoload. Refers to subfolders in the main module*
 
-#### test/init.pp
+#### tests/init.pp
 
 ```puppet
 include localusers
