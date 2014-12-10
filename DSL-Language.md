@@ -1,4 +1,4 @@
-# DSL - Domain Specific Language
+﻿# DSL - Domain Specific Language
 
 
 #### Array
@@ -152,7 +152,7 @@ if condition {
 }
 ```
 
-**Example**
+**Example 1**
 
 ```puppet
 $apache = true
@@ -161,6 +161,15 @@ if $apache {
 	file {'/etc/motd': ensure => present, content => 'Apache web server', }
 } else {
 	file {'/etc/motd': ensure => present, content => 'Unassigned server', }
+}
+```
+
+**Example 2** - Using regex
+
+```puppet
+if $::hostname =~ /^puppetnode(\d+)/ {
+    notice("You have arrived at server $0 ")
+    # $0 is only available in this block
 }
 ```
 
