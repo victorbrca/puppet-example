@@ -1,36 +1,6 @@
-﻿# Resources
+# Resource Types
 
-[Language: Resources](https://docs.puppetlabs.com/puppet/latest/reference/lang_resources.html)
-
-## Resource Types
-
-[Type Reference](https://docs.puppetlabs.com/references/latest/type.html)
-
-Resources define types and attributes of desired state to puppet.  
-
-Puppet then passes that information to a provider, which will vary depending on your system.
-
-Each resource describes some aspect of a system, like a service that must be running or a package that must be installed. The block of Puppet code that describes a resource is called a resource declaration.
-
-**Syntax**
-
-```puppet
-type {'resource title|name':
-    attribute => 'attribute value',
-}
-```
-
-For example, this will use the appropriate package manager depending on Debian (apt) or RedHat (RPM) system to make sure that openssh is installed:
-
-```
-package { 'openssh':
-  ensure  => installed,
-  alias   => openssh,
-  require => Package[openssl]
-}
-```
-
-### Type: file
+#### file
 
 - file - Makes sure it's a normal file
 - directory -  Makes sure it's a directory (enables recursive)
@@ -53,25 +23,9 @@ file { '/etc/motd':
 }
 ```
 
-Setting file attribute for many files (file defaulst) and overriding the group
-
-```puppet
-File {
-    owner => 'root',
-    group => 'finance',
-    mode  => '660',
-}
-            
-file { '/etc/motd':
-    ensure => present,
-    group  => 'root',
-}
-
-```
-
 ***Note:*** When using "source => puppet:///" the files should be readable by the remote user to download the file. Usually set it to '644'.
 
-### Type: user
+#### User
 
 https://docs.puppetlabs.com/references/latest/type.html#user
 
@@ -99,7 +53,7 @@ user { 'jeff':
 }
 ```
 
-### Type: group
+#### Group
 
 https://docs.puppetlabs.com/references/latest/type.html#group
 
@@ -112,7 +66,7 @@ group { 'wheel':
 
 *** Note:*** *Assigining a user to a group makes puppet to implicit create a group before adding users*
 
-### Type: package
+#### Package
 
 https://docs.puppetlabs.com/references/latest/type.html#package
 
@@ -127,9 +81,12 @@ package { ['openssh','mysql']:
 }
 ```
 
-### Type: service
+#### Service
 
 https://docs.puppetlabs.com/references/latest/type.html#service
+
+How to make sure that package is installed before?
+Service name depending on distro
 
 ```puppet
 service { 'sshd':
@@ -138,7 +95,7 @@ service { 'sshd':
 }
 ```
 
-Using factor variable to define a service based on distro
+Using factor variable to define a service
 
 ```puppet
 case $osfamily { 
@@ -160,29 +117,9 @@ case $osfamily {
 }
 ```
 
-### Type: schedule
-
-Execute a system update when puppet agent runs between 12am-1am
-
-```puppet
-$systemupdate = $osfamily ? {
-    'RedHat' => '/usr/bin/yum update -y',
-    'Debian' => '/usr/bin/apt-get upgrade -y',
-}
-
-schedule { 'system-daily':
-    period => daily,
-    range  => '00:00 - 01:00',
-}
-
-exec { $systemupdate:
-    schedule => 'system-daily',
-}
-```
-
 ## Metaparameters
 
-### require 
+#### require 
 
 https://docs.puppetlabs.com/references/latest/metaparameter.html#require
 
@@ -205,11 +142,11 @@ service { 'sshd':
 }
 ```
 
-### before
+#### before
 
 https://docs.puppetlabs.com/references/latest/metaparameter.html#before
 
-Apply this before a referenced resource is applied.
+Apply this before a referenced resource is applyed.
 
 **Example (before)**
 
@@ -227,7 +164,7 @@ service { 'sshd':
 }
 ```
 
-### subscribe
+#### subscribe
 
 https://docs.puppetlabs.com/references/latest/metaparameter.html#subscribe
 
@@ -250,7 +187,7 @@ service { 'sshd':
 }
 ```
 
-### notify
+#### notify
 
 https://docs.puppetlabs.com/references/latest/metaparameter.html#notify
 
@@ -273,31 +210,16 @@ service { 'sshd':
 }
 ```
 
-### Other Common Metaparameters
+#### Other Metaparameters
 
-- **alias** - Creates an alias for a resource name. Can be used to refer to a resource name instead of it's real name
+- **alias** - Creates an alias for a resource name
 - **audit** - Checks if an attribute for resource has changed since last run
 - **noop** - Tells the resource not to execute
 - **loglevel** - Valid values are debug, info, notice, warning, err, alert, emerg, crit, verbose.
 - **tag** - Sets a tag for a resource (can be used to execute resources with specific tags)
 
 
-## Arrays
 
-Examples:
-
-```puppet
-user { 'jeff':
-	ensure => present,
-	groups => [ 'wheel', 'finance'],
-}
-```
-
-```puppet
-package { ['openssh','mysql']:
-	ensure => present,
-}
-```
 
 
 
