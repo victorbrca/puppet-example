@@ -1,4 +1,4 @@
-# Commands
+﻿# Commands
 
 
 #### puppet agent -t
@@ -63,7 +63,7 @@ Notice: Finished catalog run in 0.28 seconds
 
 #### puppet apply init.pp
 
-Apply catalogue
+Apply catalogue. Also same as doing `puppet agent -t` on Master, but only using the file give.
 
 **Syntax:** `puppet apply [file]`
 

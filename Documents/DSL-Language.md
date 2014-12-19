@@ -13,12 +13,15 @@ https://docs.puppetlabs.com/puppet/latest/reference/lang_variables.html
 - Inside a double-quoted string, you can optionally surround the name of the variable (the portion after the $) with curly braces (${var_name}). This syntax helps to avoid ambiguity and allows variables to be placed directly next to non-whitespace characters. These optional curly braces are only allowed inside strings
 - variable assignments are parse-order dependent. This means you cannot resolve a variable before it has been assigned
 
+Syntax
+
+```puppet
+$variable = "Variable value"
+```
 
 ### Understanding scopes
 
 https://docs.puppetlabs.com/puppet/latest/reference/lang_scope.html
-
-
 
 #### Top scope
 
@@ -48,11 +51,24 @@ Variables and defaults declared at node scope can override those received from t
 
 A local variable can overwrite top (unless the variable is called with `::`) and node scope variables.
 
-Syntax
+A local variable can also access a local variable that is out of scope. For example:
 
+../modules/base/manifests/params.pp
 ```puppet
-$content = "some content\n"
+$author = "James W."
 ```
+
+../modules/base/manifests/books.pp
+```puppet
+$author = $base::params::author
+```
+
+site.pp
+```puppet
+include base::params
+include base::books
+```
+
 
 #### Single Quotes vs. Double Quotes
 

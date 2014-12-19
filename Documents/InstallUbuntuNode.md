@@ -1,4 +1,4 @@
-# Install Ubuntu Node
+﻿# Install Ubuntu Node
 
 ## Enterprise
 
@@ -41,7 +41,7 @@ service ssh restart
 or
 
 ```bash
-wget --no-check-certificate https://172.31.100.162:8140/packages/current/install.bash
+wget --no-check-certificate https://puppetmaster.mydomain.com:8140/packages/current/install.bash
 
 bash install.bash
 ```
