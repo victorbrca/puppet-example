@@ -91,21 +91,9 @@ PermitRootLogin yes
 service sshd restart
 ```
 
-Download the installer from the Puppet master
+Configure node to connect to master by setting up 'server' in pupppet.conf on node
 
-```
-wget --no-check-certificate https://puppetmaster.mydomain.com:8140/packages/current/install.bash
-```
-
-Install it
-
-```
-bash install.bash
-```
-
-Configure node to connect to master by setting up 'server' in pupppet.conf on node (should already be there)
-
-Check if the agent can connect to master (this also downloads all catalogs if cert has already been allowed)
+Check if can connect to master (this also downloads all catalogs if cert is allowed)
 
 ```
 puppet agent -t

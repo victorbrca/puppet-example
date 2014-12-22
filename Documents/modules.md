@@ -1,4 +1,4 @@
-﻿# Modules
+# Modules
 
 ### Folder Structure 
 
@@ -10,17 +10,17 @@ Puppet Enterprise
 ```
 ├── files
 ├── manifests
-│   ├── groups
-│   │   ├── finance.pp (example)
-│   │   └── wheel.pp (example)
-│   └── init.pp
+│   ├── groups
+│   │   ├── finance.pp (example)
+│   │   └── wheel.pp (example)
+│   └── init.pp
 ├── templates
 └── tests
     └── init.pp
 ```
 
 - files - Stores files needed by nodes
-- manifests - Should always have a init.pp, which is called automatically
+- manifests - Should always have a init.pp
 - templates - 
 - tests - Used to test modules
 

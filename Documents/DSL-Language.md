@@ -13,15 +13,12 @@ https://docs.puppetlabs.com/puppet/latest/reference/lang_variables.html
 - Inside a double-quoted string, you can optionally surround the name of the variable (the portion after the $) with curly braces (${var_name}). This syntax helps to avoid ambiguity and allows variables to be placed directly next to non-whitespace characters. These optional curly braces are only allowed inside strings
 - variable assignments are parse-order dependent. This means you cannot resolve a variable before it has been assigned
 
-Syntax
-
-```puppet
-$variable = "Variable value"
-```
 
 ### Understanding scopes
 
 https://docs.puppetlabs.com/puppet/latest/reference/lang_scope.html
+
+
 
 #### Top scope
 
@@ -51,24 +48,11 @@ Variables and defaults declared at node scope can override those received from t
 
 A local variable can overwrite top (unless the variable is called with `::`) and node scope variables.
 
-A local variable can also access a local variable that is out of scope. For example:
+Syntax
 
-../modules/base/manifests/params.pp
 ```puppet
-$author = "James W."
+$content = "some content\n"
 ```
-
-../modules/base/manifests/books.pp
-```puppet
-$author = $base::params::author
-```
-
-site.pp
-```puppet
-include base::params
-include base::books
-```
-
 
 #### Single Quotes vs. Double Quotes
 
@@ -381,7 +365,44 @@ Statements stand on their own and do not return arguments; they are used for per
 https://docs.puppetlabs.com/guides/custom_functions.html
 
 
+## Resource Collectors
 
+[Language: Resource Collectors](https://docs.puppetlabs.com/puppet/latest/reference/lang_collectors.html)
 
+Resource collectors allow you to do a "find and replace" on already defined resource attributes. 
+
+**Syntax**
+
+```puppet
+resource type <| attribute [operator] value |> {
+    attribute 1 => 'value',
+    attribute 2 => 'value',
+}
+```
+
+For example, the code below will search attributes in the local base catalog and substitute groups that are set to 'root' for the group 'jeff':
+
+```puppet
+class base::group {
+	File <| group == "root" |> {
+		group => "jeff",
+	}
+}
+```
+
+Search operators:
+
+- ==
+- !=
+- and
+- or 
+
+**Example:** Adds the group 'osinstall' to all `file` resource type in the catalog.
+
+```puppet
+File <| |> {
+    group += ['osinstall'],
+}
+```
 
 

@@ -1,8 +1,4 @@
-﻿# Site.pp
-
-The include function declares a class, if it hasn’t already been declared somewhere else. If a class HAS already been declared, include will notice that and do nothing.
-
-Usually the order of include is not important due to require and dependencies.
+# Site.pp
 
 
 
