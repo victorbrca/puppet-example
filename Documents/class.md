@@ -4,6 +4,12 @@
 
 [Learning Puppet — Modules and Classes](https://docs.puppetlabs.com/learning/modules1.html#classes)
 
+### Naming
+
+- Must begin with a lowercase letter
+- Name can include lowercase letters, numbers and underscores
+- The class names `main` and `settings` cannot be used 
+
 ### Inheritance
 
 https://docs.puppetlabs.com/puppet/latest/reference/lang_classes.html#inheritance
@@ -13,6 +19,7 @@ Class inheritance should be avoided. It should be used mainly to avoid repetitio
 Cons:
 - Decreases modularity
 - Increases compile time
+- To let a “params class” provide default values for another class’s parameters
 
 Pros:
 - Allows to extend classes and use the local scope variables
@@ -40,7 +47,7 @@ class apache::ssl inherits apache {
 }
 ```
 
-**Example 1a:** Calling a local scope variable from another class
+**Example 1:** Calling a local scope variable from another class
 
 ```puppet
 # manifests/params.pp 
@@ -89,7 +96,7 @@ node "xyz" {
 }
 ```
 
-**Example 1b:** Inheriting a class
+**Example 2:** Inheriting a class
 
 ```puppet
 # manifests/params.pp 
@@ -134,5 +141,52 @@ No need for `include base::params` in the main `site.pp`.
 # ../../manifests/site.pp 
 node "xyz" {
     include base::ssh
+}
+```
+
+**Example 3:** Define requirements within a class
+
+On this example, the parameter `$ntppackage` is defined as required and has its default value from the variable `$package_name` in `ntp::params`:
+
+```puppet
+class ntp ($ntppackage => $ntp::params::package_name ) inherits ntp::params {
+	package { 'ntp_package':
+		name  => $ntppackage,
+		ensure => present,
+	}
+}
+```
+
+The value was defined in `ntp::params`:
+
+```puppet
+class ntp::params {
+	$package_name = 'ntp'
+}
+```
+
+However, this allows us to overwrite the value of `$ntppackage` from `site.pp`:
+
+```puppet
+class { 'ntp': ntppackage => 'ntpd', }
+```
+
+Note that the parameter, is not a variable, however it can be assigned the value of a variable:
+
+***site.pp***
+```puppet
+node "ntp.mydomain.com" {
+	$ntppackage = "My package name"
+	class { 'ntp': }
+}
+```
+
+***ntp.pp***
+```puppet
+class ntp ($ntppackage => $ntppackage) inherits ntp::params {
+	package { 'ntp_package':
+		name  => $ntppackage,
+		ensure => present,
+	}
 }
 ```

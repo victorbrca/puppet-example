@@ -1,4 +1,10 @@
-# Modules
+﻿# Modules
+
+### Naming
+
+- Must begin with a lowercase letter
+- Name can include lowercase letters, numbers and underscores
+- The module names `main` and `settings` cannot be used 
 
 ### Folder Structure 
 
@@ -10,10 +16,10 @@ Puppet Enterprise
 ```
 ├── files
 ├── manifests
-│   ├── groups
-│   │   ├── finance.pp (example)
-│   │   └── wheel.pp (example)
-│   └── init.pp
+│   ├── groups
+│   │   ├── finance.pp (example)
+│   │   └── wheel.pp (example)
+│   └── init.pp
 ├── templates
 └── tests
     └── init.pp

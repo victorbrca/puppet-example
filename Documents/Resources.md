@@ -1,4 +1,4 @@
-# Resource Types
+﻿# Resource Types
 
 #### file
 
@@ -24,6 +24,18 @@ file { '/etc/motd':
 ```
 
 ***Note:*** When using "source => puppet:///" the files should be readable by the remote user to download the file. Usually set it to '644'.
+
+**TIP** - Only create the file if it doesn't exist with `replace => no`. This is useful if you are using a `source`, `content` or `file` attribute to create the file, but plan to make modifications to the file manually later. 
+
+```puppet
+file { "/tmp/hello-file":
+    replace => "no", # this is the important property
+    ensure  => "present",
+    content => "From Puppet\n",
+    mode    => 644,
+}
+```
+
 
 #### User
 
@@ -219,17 +231,8 @@ service { 'sshd':
 - **tag** - Sets a tag for a resource (can be used to execute resources with specific tags)
 
 
+## Resource Execution and Ordering
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+- Puppet doesn't apply the catalog in a specific order
+- You can use metaparameters (requires, before) to order how a catalog is applied
+- When using multiple notify for the same resource, Puppet will only restart a service once

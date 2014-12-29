@@ -7,7 +7,7 @@
 https://docs.puppetlabs.com/puppet/latest/reference/lang_variables.html
 
 - Are constants and cannot be reassigned a value within the given scope (however they can be re-assigned in a different scope level)
-- Variable names are case-sensitive and can include alphanumeric characters and underscores
+- Variable names are case-sensitive and can include alphanumeric characters and underscores. Dashes should NOT be used, and the variable name `$string` is reserved
 - Qualified variable names are prefixed with the name of their scope and the :: (double colon) namespace separator. (For example, the $vhostdir variable from the apache::params class would be $apache::params::vhostdir)
 - You can access out-of-scope variables from named scopes by using their qualified names `$vhostdir = $apache::params::vhostdir`
 - Inside a double-quoted string, you can optionally surround the name of the variable (the portion after the $) with curly braces (${var_name}). This syntax helps to avoid ambiguity and allows variables to be placed directly next to non-whitespace characters. These optional curly braces are only allowed inside strings
@@ -166,6 +166,22 @@ if $apache {
 if $::hostname =~ /^puppetnode(\d+)/ {
     notice("You have arrived at server $0 ")
     # $0 is only available in this block
+}
+```
+
+**Example 3**
+
+```puppet
+if $color and $sound {
+    do something
+}
+
+if ($color == 'red') or ($sound == 'loud') {
+    do something
+}
+
+if ($color == 'blue') and ($sound == 'loud') {
+    do something
 }
 ```
 
