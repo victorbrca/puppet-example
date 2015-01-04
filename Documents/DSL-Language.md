@@ -143,11 +143,11 @@ include base::ssh
 
 ## Conditional Statements
 
-https://docs.puppetlabs.com/puppet/latest/reference/lang_conditional.html
+[Language: Conditional Statements](https://docs.puppetlabs.com/puppet/latest/reference/lang_conditional.html)
 
 ### if
 
-https://docs.puppetlabs.com/puppet/latest/reference/lang_conditional.html#if-statements
+[If Statements](https://docs.puppetlabs.com/puppet/latest/reference/lang_conditional.html#if-statements)
 
 
 **Syntax**
@@ -201,7 +201,7 @@ if ($color == 'blue') and ($sound == 'loud') {
 
 ### unless
 
-https://docs.puppetlabs.com/puppet/latest/reference/lang_conditional.html#unless-statements
+[Unless Statements](https://docs.puppetlabs.com/puppet/latest/reference/lang_conditional.html#unless-statements)
 
 **Example**
 ```puppet
@@ -212,7 +212,7 @@ Unless $memorytotal > 1024 {
 
 ### case
 
-https://docs.puppetlabs.com/puppet/latest/reference/lang_conditional.html#case-statements
+[Case Statements](https://docs.puppetlabs.com/puppet/latest/reference/lang_conditional.html#case-statements)
 
 - Do not require default matches (compiling will not fail)
 - Useful for when setting a block of code of more than one variable
@@ -290,6 +290,8 @@ case $osfamily {
 ```
 
 ### selector
+
+[Selector statements](https://docs.puppetlabs.com/puppet/latest/reference/lang_conditional.html#selectors)
 
 Selector statements are similar to case statements, but return a value instead of executing a code block.
 
