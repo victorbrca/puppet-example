@@ -1,6 +1,8 @@
 ﻿# Resource Types
 
-#### file
+#### File
+
+https://docs.puppetlabs.com/references/latest/type.html#file
 
 - file - Makes sure it's a normal file
 - directory -  Makes sure it's a directory (enables recursive)
@@ -25,7 +27,7 @@ file { '/etc/motd':
 
 ***Note:*** When using "source => puppet:///" the files should be readable by the remote user to download the file. Usually set it to '644'.
 
-**TIP** - Only create the file if it doesn't exist with `replace => no`. This is useful if you are using a `source`, `content` or `file` attribute to create the file, but plan to make modifications to the file manually later. 
+**Tip 1** - Only create the file if it doesn't exist with `replace => no`. This is useful if you are using a `source`, `content` or `file` attribute to create the file, but plan to make modifications to the file manually later. 
 
 ```puppet
 file { "/tmp/hello-file":
@@ -36,6 +38,44 @@ file { "/tmp/hello-file":
 }
 ```
 
+**Tip 2** - Create folder and subfolders
+
+Use the `recurse` attribute to get the same results as `mkdir -p`
+
+```puppet
+file { '/var/www/html':
+    ensure => directory,
+	recurse => true,
+}
+```
+
+**Tip 3** - When using `recurse` with a source, by default it will not overwrite files not managed by puppet (this can be changed with `purge => true`)
+
+```puppet
+file { 'upload_sdns':
+	name    => '/apps/scope/cb/DeploymentDirector/updates',
+	ensure  => directory,
+	owner   => 'ma_admin',
+	group   => 'ma_admin',
+	source  => "puppet:///sdns/2011/CB",
+	recurse => true,
+}
+```
+
+**Tip 4** - Use `exec` to only create a file if it exists
+
+```puppet
+exec { 'check_sdn_folder':
+    command => '/bin/true',
+    onlyif => '/usr/bin/test -d /apps/scope/cb/DeploymentDirector/updates',
+}
+
+file { 'upload_sdns':
+	name    => '/apps/scope/cb/DeploymentDirector/updates',
+	ensure  => directory,
+	require => Exec['check_sdn_folder'],
+}
+```
 
 #### User
 
@@ -76,7 +116,7 @@ group { 'wheel':
 }
 ```
 
-*** Note:*** *Assigining a user to a group makes puppet to implicit create a group before adding users*
+*** Note:*** *Assigining a user to a group makes puppet to implicit create a group before adding users*s
 
 #### Package
 

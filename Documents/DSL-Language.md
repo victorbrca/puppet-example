@@ -13,11 +13,31 @@ https://docs.puppetlabs.com/puppet/latest/reference/lang_variables.html
 - Inside a double-quoted string, you can optionally surround the name of the variable (the portion after the $) with curly braces (${var_name}). This syntax helps to avoid ambiguity and allows variables to be placed directly next to non-whitespace characters. These optional curly braces are only allowed inside strings
 - variable assignments are parse-order dependent. This means you cannot resolve a variable before it has been assigned
 
+#### Single Quotes vs. Double Quotes
 
-### Understanding scopes
+- Double quotes evaluate the value of the variable
+- Single quotes interpret the variable name
+
+**Example:** the second option will display "$var There", while the third will display "Hello There"
+
+```puppet
+$var = "Hello"
+$var1 = '$var There'
+$var1 = "$var There"
+```
+
+#### Appending Values
+
+Example: The final value or `var` is `['banana','apple','pear']`
+
+```puppet
+$var = ['banana','apple']
+$var += ['pear']
+```
+
+### Scopes
 
 https://docs.puppetlabs.com/puppet/latest/reference/lang_scope.html
-
 
 
 #### Top scope
@@ -54,27 +74,21 @@ Syntax
 $content = "some content\n"
 ```
 
-#### Single Quotes vs. Double Quotes
+#### Variable Scope Origin
 
-- Double quotes evaluate the value of the variable
-- Single quotes interpret the variable name
+**Top scope variables are defined in:**
+- site.pp outside a node definition
+- Puppet Enterprise Console
+- External Node Classifier Data
+- facts
 
-**Example:** the second option will display "$var There", while the third will display "Hello There"
+**Node Scope variables are defined in:**
+- site.pp inside a node definition
 
-```puppet
-$var = "Hello"
-$var1 = '$var There'
-$var1 = "$var There"
-```
+**Local scope variables are defined in:**
+- a class definition
+- a defined type
 
-#### Appending Values
-
-Example: The final value or `var` is `['banana','apple','pear']`
-
-```puppet
-$var = ['banana','apple']
-$var += ['pear']
-```
 
 #### Accessing Local Variables from Other Scopes
 

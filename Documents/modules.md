@@ -30,6 +30,8 @@ Puppet Enterprise
 - templates - 
 - tests - Used to test modules
 
+autoloader requries class name to have the same name as filename
+
 #### init.pp
 ```puppet
 class localusers {

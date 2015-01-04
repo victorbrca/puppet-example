@@ -67,6 +67,14 @@ Sign all nodes
 
 **Syntax:** `puppet cert sign --all`
 
+#### puppet cert clean 
+
+Delete agent from master
+
+**Syntax:** `puppet cert clean [node]`
+
+
+
 ## puppet config
 
 This subcommand can inspect and modify settings from Puppet's `puppet.conf` configuration file. 
@@ -76,6 +84,8 @@ This subcommand can inspect and modify settings from Puppet's `puppet.conf` conf
 ```bash
 puppet config print certname
 ```
+
+
 
 ## puppet parser
 
@@ -98,13 +108,31 @@ Inspect files for syntax errors (validates DSL syntax). It does not validate res
 Error: Could not parse for environment production: Syntax error at ':' at /etc/puppetlabs/puppet/modules/localusers/manifests/groups/wheel.pp:1
 ```
 
+
+
 ## puppet apply
 
 Applies a standalone Puppet manifest to the local system.
 
+#### puppet apply init.pp
+
+Applies Puppet manifest to the local system using specified file.
+
+**Syntax:** `puppet apply [file]`
+
+**Example:**
+
+```bash
+# puppet apply init.pp 
+Notice: Compiled catalog for 
+in environment production in 0.48 seconds
+Notice: /Stage[main]/Localusers/User[admin]/ensure: created
+Notice: Finished catalog run in 0.58 seconds
+```
+
 #### puppet apply --noop
 
-Run catalogue without applying (dry run).
+Run manifest without applying (dry run).
 
 **Syntax:** `puppet apply --noop [file]`
 
@@ -119,21 +147,7 @@ Notice: Stage[main]: Would have triggered 'refresh' from 1 events
 Notice: Finished catalog run in 0.28 seconds
 ```
 
-#### puppet apply init.pp
 
-Apply catalogue
-
-**Syntax:** `puppet apply [file]`
-
-**Example:**
-
-```bash
-# puppet apply init.pp 
-Notice: Compiled catalog for 
-in environment production in 0.48 seconds
-Notice: /Stage[main]/Localusers/User[admin]/ensure: created
-Notice: Finished catalog run in 0.58 seconds
-```
 
 # puppet module
 
