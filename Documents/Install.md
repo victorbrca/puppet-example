@@ -33,6 +33,10 @@ cd puppet-enterprise-3.7.1-el-7-x86_64
 chmod u+x puppet-enterprise-installer 
 ./puppet-enterprise-installer
 ```
+You can also use an answer file with:
+
+- Create an answer file or obtain the answer file created by the web-based installer. You can find the latter at /opt/puppet/share/installer/answers on the machine from which you ran the installer.
+- Run the installer with the -a or -A flag pointed at the answer file.
 
 Type in a 'y' at the prompt.
 

@@ -1,24 +1,26 @@
-# Hiera
+﻿# Hiera
 
 Hiera is a key/value lookup tool for configuration data that lets you set node-specific data without repeating yourself.
 
 It is installed by default on Puppet Enterprise 3 and up.
+
+It provides a command line tool for testing `key:value` lookups
 
 #### Configuration files
 
 - Puppet Enterprise: /etc/puppetlabs/puppet/hiera.yaml
 - Puppet OpenSource:/etc/puppet/hiera.yaml
 
-Example config file
-
+**Example config file**
 ```hiera
 ---
 :backends:
   - yaml
 :hierarchy:
   - defaults
-  - "%{clientcert}"
+  - "node/%{clientcert}"
   - "%{environment}"
+  - "%{::osfamily}"
   - global
 
 :yaml:
@@ -26,7 +28,20 @@ Example config file
 # - /var/lib/hiera on *nix
 # - %CommonAppData%\PuppetLabs\hiera\var on Windows
 # When specifying a datadir, make sure the directory exists.
-  :datadir:
+  :datadir: /etc/puppetlabs/puppet/hieradata
+```
+
+**Example data directory**
+
+```
+# /etc/puppetlabs/puppet/hieradata/
+.
+├── dev.yaml
+├── debian.yaml
+├── global.yaml
+├── node
+│   └── host.mydomain.com.yaml
+└── redhat.yaml
 ```
 
 ### Hiera and class parameters

@@ -55,3 +55,24 @@ class localusers::groups::wheel {
 include localusers
 include localusers::groups::wheel
 ```
+
+## Creating and Uploading Modules for Puppet Forge
+
+**Preparing a Module**
+
+- Make sure proper directory structure exists
+- Populate metadata.json with dependencies and basic module information (puppet certification exam still refers to the old `modulefile`)
+- Remove all symlinks
+- Run the command `puppet module build [dir]`
+
+**Defining Dependencies**
+
+Using 1.2.x will match 'x' as a wildcard, however that cannot be used with operator ranges (`<, >, =`)
+
+```puppet
+# metadata.json
+"dependencies":[
+{"name":"ownership/module","version_requirement":">=0.1.0"}
+{"name":"ownership/module2","version_requirement":">=0.1.0<0.5.0"}
+]
+```

@@ -1,4 +1,4 @@
-﻿# Class 
+# Class 
 
 [Language: Classes](https://docs.puppetlabs.com/puppet/latest/reference/lang_classes.html)
 
@@ -27,6 +27,8 @@ Pros:
 When to use:
 - Override resource attributes
 - Avoid repetition of code
+
+Note: Inheriting a class will also declare it, even if it was not declared
 
 ```puppet
 # Apache file
@@ -144,7 +146,27 @@ node "xyz" {
 }
 ```
 
-**Example 3:** Define requirements within a class
+## Automatic Parameter Lookup
+
+Lets the class ask for data to be passed in at the time that it’s declared, and it can use that data as normal variables throughout its definition.
+
+```puppet
+# In this example, $parameter's value gets set when `myclass` is eventually declared.
+# Class definition:
+class myclass ($parameter_one = "default text") {
+    file {'/tmp/foo':
+        ensure  => file,
+        content => $parameter_one,
+    }
+}
+```
+
+The automatic parameter lookukp also works with Hiera. It will populate date in the following order:
+- Looks for parameters passed during the class declaration (like in `site.pp`)
+- Does a hiera lookup for `<CLASS NAME>::<PARAMETER NAME>`
+- Uses the default parameter if defined in the class
+
+**Example 1:** Define requirements within a class
 
 On this example, the parameter `$ntppackage` is defined as required and has its default value from the variable `$package_name` in `ntp::params`:
 
