@@ -1,4 +1,4 @@
-# Class 
+﻿# Class 
 
 [Language: Classes](https://docs.puppetlabs.com/puppet/latest/reference/lang_classes.html)
 
@@ -146,7 +146,7 @@ node "xyz" {
 }
 ```
 
-## Automatic Parameter Lookup
+## Class Parameter (Automatic Parameter Lookup)
 
 Lets the class ask for data to be passed in at the time that it’s declared, and it can use that data as normal variables throughout its definition.
 
@@ -161,7 +161,7 @@ class myclass ($parameter_one = "default text") {
 }
 ```
 
-The automatic parameter lookukp also works with Hiera. It will populate date in the following order:
+The automatic parameter lookup also works with Hiera. It will populate date in the following order:
 - Looks for parameters passed during the class declaration (like in `site.pp`)
 - Does a hiera lookup for `<CLASS NAME>::<PARAMETER NAME>`
 - Uses the default parameter if defined in the class
@@ -193,6 +193,8 @@ However, this allows us to overwrite the value of `$ntppackage` from `site.pp`:
 class { 'ntp': ntppackage => 'ntpd', }
 ```
 
+***Need to check sentence below***
+
 Note that the parameter, is not a variable, however it can be assigned the value of a variable:
 
 ***site.pp***
@@ -210,5 +212,74 @@ class ntp ($ntppackage => $ntppackage) inherits ntp::params {
 		name  => $ntppackage,
 		ensure => present,
 	}
+}
+```
+
+### Examples of class parameters and scopes
+
+This will work (`Notice: Value is 1`)
+```puppet
+class classparameter ($value = "1") {
+    notify { "Value is $value": }
+}
+```
+
+This will fail with `Cannot reassign variable value`
+
+```puppet
+class classparameter ($value = "1") {
+    $value = "2"
+    notify { "Value is $value": }
+}
+```
+
+This will work (`Notice: Value is 0`)
+
+```puppet
+class classparameter ($value = "1") {
+    notify { "Value is $value": }
+}
+
+# site.pp
+node default {
+	class { 'classparameter': value => "0" }
+}
+```
+
+Assigning a variable outside of the node declaration will result in a top scope variable. 
+
+```
+Notice: Value is 1
+Notice: Value_top is 0
+```
+
+```
+class classparameter ($value = "1") {
+        $value_top = $::value
+        notify { "Value is $value": }
+        notify { "Value_top is $value_top": }
+
+}
+
+# site.pp
+$value = "0"
+node default {
+	class { 'classparameter': value => "0" }
+}
+```
+
+However adding the variable to the node definition will result in not being a top scope variable.
+
+```
+Notice: Value is 1
+Notice: Value_top is
+```
+
+```puppet
+# site.pp
+
+node default {
+    $value = "0"
+	class { 'classparameter': value => "0" }
 }
 ```
