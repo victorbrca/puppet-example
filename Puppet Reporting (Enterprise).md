@@ -5,9 +5,9 @@ Puppet report is built at the end of every agent run on the node and uploaded to
 The following data is available in the Console dashboard:
 - Total - Total number or resources being managed
 - Failed - How many resources were no put into desired configuration state
-- Changed - 
-- Unchanged - 
-- No-op - 
+- Changed - Resource was out of sync and puppet changed to desired state
+- Unchanged - Resource was in sync
+- No-op - Resource was out of sync however puppet was instructed not to change via `noop`
 - Skipped - Total number or resources skipped due to tags (or other configuration)
 - Failed Restarts - How many resources failed to restart
 - Config Retrieval - How long it took for the catalog to be compiled on the master and downloaded to the node
