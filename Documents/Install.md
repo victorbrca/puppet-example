@@ -1,6 +1,11 @@
-﻿# Install steps
+Installing Puppet
+=================
 
-## Puppet Enterprise
+
+Installing Puppet Enterprise
+----------------------------
+
+[Installing Puppet Enterprise Overview](https://docs.puppetlabs.com/pe/latest/install_basic.html)
 
 ### Master
 
@@ -95,9 +100,12 @@ PermitRootLogin yes
 service sshd restart
 ```
 
+**Install puppet pe (missing this section)**
+
+
 Configure node to connect to master by setting up 'server' in pupppet.conf on node
 
-Check if can connect to master (this also downloads all catalogs if cert is allowed)
+Check if can connect to master by running `puppet agent` (this also runs all catalogs if cert has already been added on the master, or if the option `autosign` is enabled on the master)
 
 ```
 puppet agent -t
@@ -109,15 +117,23 @@ Check on master nodes waiting for key
 puppet cert list
 ```
 
-Sing one node from master
+Sign node from master
 
 ```
 puppet cert sign puppetnode.mydomain.ca
 ```
 
-Sign all nodes
+Or sign all nodes
 
 ```
 puppet cert sign --all
 ```
 
+Run `puppet agent` on node again, or wait for next run time (dictated by option `runinterval` on agent)
+
+```
+puppet agent -t
+```
+
+Installing Puppet Open Source
+----------------------------

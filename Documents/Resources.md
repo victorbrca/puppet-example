@@ -1,10 +1,32 @@
-# Resource Types
+Resource Types And Metaparameters
+=================================
+
+Resources
+---------
 
 [Type Reference](https://docs.puppetlabs.com/references/latest/type.html)
 
+Resources are a fundamental part of Puppet. Each resource describes some aspect of a system, like a service that must be running or a package that must be installed.
+
+The block of Puppet code that describes a resource is called a resource declaration.
+
+#### Resource Execution and Ordering
+
+- Puppet doesn't apply the catalog in a specific order
+- You can use metaparameters (requires, before) to order how a catalog is applied
+- When using multiple notify for the same resource, Puppet will only restart a service once
+
+#### Resource Name (Title)
+
+- Two resources of the same type cannot have the same title, however different resource types can, because puppet refers to them as `type[title]`. For example, `File[httpd]` for the httpd config, and `Package[httpd]` for the httpd package. 
+- Puppet parser validate does not check for resource names or resource validation, only syntax
+- Resource names are case sensitive. So `file { 'motd':` is different than `file { 'Motd':`.
+
+### Most Used Recourse Types
+
 #### File
 
-https://docs.puppetlabs.com/references/latest/type.html#file
+[Type Reference - file](https://docs.puppetlabs.com/references/latest/type.html#file)
 
 - file - Makes sure it's a normal file
 - directory -  Makes sure it's a directory (enables recursive)
@@ -57,8 +79,8 @@ file { '/var/www/html':
 file { 'upload_sdns':
 	name    => '/apps/scope/cb/DeploymentDirector/updates',
 	ensure  => directory,
-	owner   => 'ma_admin',
-	group   => 'ma_admin',
+	owner   => 'cbadmin',
+	group   => 'cbadmin',
 	source  => "puppet:///sdns/2011/CB",
 	recurse => true,
 }
@@ -81,22 +103,22 @@ file { 'upload_sdns':
 
 #### User
 
-https://docs.puppetlabs.com/references/latest/type.html#user
+[Type Reference - user](https://docs.puppetlabs.com/references/latest/type.html#user)
 
 **Example 1**
 
 ```puppet
  user { 'admin':
-                ensure     		=> present,
-                shell      		=> '/bin/bash',
-                home       		=> '/home/admin',
-                gid				=> 'wheel',
-                managehome		=> true, # ensures that home exists
-                password		=> '$6$.D6.L3YN$xElKED4RUc0y89PdUZK0Yd9EjPin7LRP9V105PWeH4orxrd.7gOFUK6P2AtwF/4oV5h.3sKEQpV9oOl.tEmuk1',
-        }
+    ensure     		=> present,
+    shell      		=> '/bin/bash',
+    home       		=> '/home/admin',
+    gid				=> 'wheel',
+    managehome		=> true, # ensures that home exists
+    password		=> '$6$.D6.L3YN$xElKED4RUc0y89PdUZK0Yd9EjPin7LRP9V105PWeH4orxrd.7gOFUK6P2AtwF/4oV5h.3sKEQpV9oOl.tEmuk1',
+}
 ```
 
-**Example 2**
+**Example 2:** Using an array for the groups
 
 ```puppet
 user { 'jeff':
@@ -109,7 +131,9 @@ user { 'jeff':
 
 #### Group
 
-https://docs.puppetlabs.com/references/latest/type.html#group
+[Type Reference - group](https://docs.puppetlabs.com/references/latest/type.html#group)
+
+Manages and creates groups.
 
 ```puppet
 group { 'wheel':
@@ -118,11 +142,15 @@ group { 'wheel':
 }
 ```
 
-*** Note:*** *Assigining a user to a group makes puppet to implicit create a group before adding users*s
+***Note:*** Assigining a user to a group makes puppet to implicit create a group before adding users's
 
 #### Package
 
-https://docs.puppetlabs.com/references/latest/type.html#package
+[Type Reference - group](https://docs.puppetlabs.com/references/latest/type.html#package)
+
+Manages OS packages (apache, samba, vim, etc...) via default package manager (apt, yum, zypper, etc...).
+
+Package names may vary depending on distro, so you have to be aware of that.
 
 ```puppet
 package { 'apache':
@@ -137,10 +165,13 @@ package { ['openssh','mysql']:
 
 #### Service
 
-https://docs.puppetlabs.com/references/latest/type.html#service
+[Type Reference - service](https://docs.puppetlabs.com/references/latest/type.html#service)
 
-How to make sure that package is installed before?
-Service name depending on distro
+Manages running services. You can make so puppet checks that the package for the service is isntalled, and even restart the service should a config file changes.
+
+Service names may vary depending on distro, so you have to be aware of that.
+
+**Example 1**
 
 ```puppet
 service { 'sshd':
@@ -149,10 +180,10 @@ service { 'sshd':
 }
 ```
 
-Using factor variable to define a service
+**Example 2: **Using factor variable to define a service name based on OS
 
 ```puppet
-case $osfamily { 
+case $osfamily {
 	'RedHat': {
 		$ssh_name = ' sshd'
 	}
@@ -171,9 +202,61 @@ case $osfamily {
 }
 ```
 
+**Example 3:** Restart the service when the config file changes with `notify`
+
+```puppet
+service { 'sshd':
+	ensure => running,
+	enable => true,
+}
+
+file { 'sshd-config':
+    name    => '/etc/ssh/sshd_config',
+    ensure  => file,
+    owner   => 'root',
+    group   => 'root',
+    source  => 'puppet:///modules/base/sshd_config',
+    notify  => Service['sshd'],
+}
+```
+
+#### Exec
+
+[Type Reference - exec](http://docs.puppetlabs.com/references/latest/type.html#exec)
+
+Executes external commands (external to puppet).
+
+By default, exec is no idempotent, however it can be made so with the use of:
+- The command (apt-get is idempotent)
+- With on of the attributes `onlyif`, `unless` or `creates`
+- The exec has `refreshonly => true`, which only allows Puppet to run the command when some other resource is changed
+
+Exec should only be used for simple tasks.
+
+**Example 1:** Only add the string `Welcome to the system` to `/etc/motd` if it doesn't already exists
+
+```puppet
+exec { "echo Welcome to the system >> /etc/motd":
+	path   => "/bin:/usr/bin",
+	onlyif => "test -z `grep Welcome /etc/motd`",
+}
+```
+
+**Example 2: **Checking if .bashrc is managed by puppet. If false, remove it
+
+```puppet
+# Let's check if .bashrc exists and is managed by puppet
+exec { 'check_bashrc':
+	command => '/bin/grep -q puppet /home/jeff/.bashrc || /bin/rm -rf /home/jeff/.bashrc',
+	user    => 'jeff',
+}
+```
+
 #### Host
 
-Installs and manages host entries. 
+[Type Reference - exec](http://docs.puppetlabs.com/references/latest/type.html#host)
+
+Installs and manages host entries.
 
 ```puppet
 class practice {
@@ -189,7 +272,7 @@ class practice {
 ```
 
 **Notes:**
-- Removing a commend on the resource configuration will not remove the comment from the resource
+- Removing a comment on the resource configuration will not remove the comment from the resource
 - It adds a header to the hosts file as shown below
 
 ```
@@ -198,17 +281,20 @@ class practice {
 # HEADER: is definitely not recommended.
 ```
 
-## Metaparameters
+Metaparameters
+---------------
 
-#### require 
+Some attributes in Puppet can be used with every resource type. These are called metaparameters. They don’t map directly to system state; instead, they specify how Puppet should act toward the resource.
 
-https://docs.puppetlabs.com/references/latest/metaparameter.html#require
+The most commonly used metaparameters are for specifying order relationships between resources.
 
-Require the named resource to exist
+#### require
 
-**Example (require)**
+[Metaparameter Reference - require](https://docs.puppetlabs.com/references/latest/metaparameter.html#require)
 
-This makes sure that the 'ssh' package is installed before the service is started. Note the capital 'P' when referencing the resource (package name).
+Require the named resource to exist.
+
+**Example:** This makes sure that the 'ssh' package is installed before the service is started. Note the capital 'P' when referencing the resource (package name).
 
 ```puppet
 package { 'ssh':
@@ -225,13 +311,11 @@ service { 'sshd':
 
 #### before
 
-https://docs.puppetlabs.com/references/latest/metaparameter.html#before
+[Metaparameter Reference - require](https://docs.puppetlabs.com/references/latest/metaparameter.html#before)
 
 Apply this before a referenced resource is applyed.
 
-**Example (before)**
-
-Makes sure that the package is present before starting the service. Note the capital 'S' when refering the service. 
+**Example:** Makes sure that the package is present before starting the service. Note the capital 'S' when refering the service. 
 
 ```puppet
 package { 'ssh-package':
@@ -247,13 +331,11 @@ service { 'sshd':
 
 #### subscribe
 
-https://docs.puppetlabs.com/references/latest/metaparameter.html#subscribe
+[Metaparameter Reference - require](https://docs.puppetlabs.com/references/latest/metaparameter.html#subscribe)
 
-Listen to puppet changes on referenced resource
+Listen to puppet changes on referenced resource.
 
-**Example (subscribe)**
-
-Restarts the sshd service whenever puppet changes '/etc/ssh/sshd_config'.
+**Example:** Restarts the sshd service whenever puppet changes '/etc/ssh/sshd_config'
 
 ```puppet
 file { '/etc/ssh/sshd_config':
@@ -262,21 +344,19 @@ file { '/etc/ssh/sshd_config':
 }
 
 service { 'sshd':
-	ensure	=> running,
-	enable	=> true,
-	subscribe	=> File['/etc/ssh/sshd_config'],
+	ensure	  => running,
+	enable	  => true,
+	subscribe => File['/etc/ssh/sshd_config'],
 }
 ```
 
 #### notify
 
-https://docs.puppetlabs.com/references/latest/metaparameter.html#notify
+[Metaparameter Reference - require](https://docs.puppetlabs.com/references/latest/metaparameter.html#notify)
 
-Sends a notification when puppet changes the resource
+Sends a notification when puppet changes the resource.
 
-**Example (notify)**
-
-Sends a notify (restart) to the service 'sshd' whenever '/etc/ssh/sshd_config' changes
+**Example:** Sends a notify (restart) to the service 'sshd' whenever '/etc/ssh/sshd_config' changes
 
 ```puppet
 file { '/etc/ssh/sshd_config':
@@ -300,14 +380,3 @@ service { 'sshd':
 - **tag** - Sets a tag for a resource (can be used to execute resources with specific tags)
 
 
-## Resource Execution and Ordering
-
-- Puppet doesn't apply the catalog in a specific order
-- You can use metaparameters (requires, before) to order how a catalog is applied
-- When using multiple notify for the same resource, Puppet will only restart a service once
-
-## Resource Name (Title)
-
-- Two resources of the same type cannot have the same title, however different resource types can, because puppet refers to them as `type[title]`. For example, `File[httpd]` for the httpd config, and `Package[httpd]` for the httpd package. 
-- Puppet parser validate does not check for resource names or resource validation, only syntax
-- Resource names are case sensitive. So `file { 'motd':` is different than `file { 'Motd':`.

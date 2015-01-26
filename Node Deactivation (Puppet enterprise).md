@@ -2,7 +2,7 @@
 
 **Steps:**
 - Stop agent on node
-- Deactivate the node on master - `pupped node deactivate [cert]`
+- Deactivate the node on master (removes from DB and frees up the license) - `pupped node deactivate [cert]`
 - Revoke the node cert on master - `puppet cert clean [cert]`
 - Restart the puppet master
 - Delete the node on the console

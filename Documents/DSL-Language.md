@@ -438,4 +438,19 @@ File <| |> {
 }
 ```
 
+Resource collectors can be declared in a class and then called from an init.pp.
 
+```puppet
+$ cat manifests/rc.pp
+class filedemo::rc {
+	File <| group == "root" |> {
+		group => "jeff",
+	}
+}
+```
+
+```puppet
+$ cat tests/rc.pp
+include filedemo::rc
+include filedemo
+```

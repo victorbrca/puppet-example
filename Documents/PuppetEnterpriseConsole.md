@@ -40,5 +40,7 @@ Puppet Enterprise (PE) event inspector is a reporting tool that provides data fo
 
 It lets you accomplish two important tasks: monitoring a summary of your infrastructure’s activity and analyzing the details of important changes and failures.
 
+
 *[1] An event is puppet's attempt to modify an individual property of a given resource.*
+
 *[2] The displayed data does not refresh automaticaly (on purpose). You need to refresh the page.*

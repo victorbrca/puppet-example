@@ -1,10 +1,57 @@
-﻿# Class 
+Class
+=====
 
 [Language: Classes](https://docs.puppetlabs.com/puppet/latest/reference/lang_classes.html)
-
 [Learning Puppet — Modules and Classes](https://docs.puppetlabs.com/learning/modules1.html#classes)
 
-### Naming
+Classes are named block of codes stored in modules. They are assigned to each node from the node definition (from manifests or from an ENC).
+
+**Syntax**
+
+```puppet
+class [class name] {
+    code block
+}
+```
+
+**Example 1:** A simple 'ntp' class
+
+```puppet
+class ntp {
+	package {'ntp':
+    	ensure => present,
+	}
+}
+```
+
+**Example 2:** A users class (`users.pp`) in the base module folder (`/etc/puppet/modules/base`)
+
+```puppet
+class base::users {
+	user { 'jeff':
+    	ensure => present,
+		shell      => '/bin/bash'
+		home       => '/home/jeff',
+		gid 	   => 'wheel',
+		managehome => true,
+	}
+}
+```
+
+##### Class Declaration
+
+Classes are usually called from the node definition (for example, site.pp) with the include function, or as a class if you are passing parameters (see section for 'Class Parameter' below).
+
+```puppet
+# /etc/puppet/manifests/site.pp
+
+node default {
+	include ntp
+    class { 'base::users': user => 'jeff', }
+}
+```
+
+##### Naming
 
 - Must begin with a lowercase letter
 - Name can include lowercase letters, numbers and underscores

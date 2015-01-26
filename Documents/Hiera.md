@@ -1,4 +1,7 @@
-﻿# Hiera
+Hiera
+=====
+[Hiera](https://docs.puppetlabs.com/hiera/1/index.html)
+[Installing and Using Hiera](http://puppetlabs.com/blog/first-look-installing-and-using-hiera)
 
 Hiera is a key/value lookup tool for configuration data that lets you set node-specific data without repeating yourself.
 
@@ -12,7 +15,7 @@ It provides a command line tool for testing `key:value` lookups
 - Puppet OpenSource:/etc/puppet/hiera.yaml
 
 **Example config file**
-```hiera
+```yaml
 ---
 :backends:
   - yaml
@@ -31,6 +34,8 @@ It provides a command line tool for testing `key:value` lookups
   :datadir: /etc/puppetlabs/puppet/hieradata
 ```
 
+*[1] You could also use puppet's environment variable to specify different datadir (files) for each environment (`:datadir: '/etc/puppetlabs/puppet/environments/%{environment}/hieradata'`)*
+
 **Example data directory**
 
 ```
@@ -42,6 +47,63 @@ It provides a command line tool for testing `key:value` lookups
 ├── node
 │   └── host.mydomain.com.yaml
 └── redhat.yaml
+```
+
+**Example data files**
+
+```yaml
+# dev.yaml
+---
+url: dev.mydomain.com
+
+# debian.yaml
+---
+url: debian.mydomain.com
+
+# redhat.yaml (this is a hash)
+---
+users:
+  jeff:
+    home: /home/jeff
+    shell: /bin/bash
+  joe:
+    home: /home/joe
+    shell: /bin/bash
+    
+# global.yaml (this is a list)
+ntp::servers:
+  - kermit.example.com iburst
+  - 0.us.pool.ntp.org iburst
+  - 1.us.pool.ntp.org iburst
+  - 2.us.pool.ntp.org iburst
+```
+
+**Example Data Types**
+
+```yaml
+---
+# array
+apache-packages:
+    - apache2
+    - apache2-common
+    - apache2-utils
+
+# string
+apache-service: apache2
+
+# interpolated facter variable
+hosts_entry: "sandbox.%{fqdn}"
+
+# hash
+sshd_settings:
+    root_allowed: "no"
+    password_allowed: "yes"
+
+# alternate hash notation
+sshd_settings: {root_allowed: "no", password_allowed: "yes"}
+
+# to return "true" or "false"
+sshd_settings: {root_allowed: no, password_allowed: yes}
 ```
 
 ### Hiera and class parameters

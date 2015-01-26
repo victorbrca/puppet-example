@@ -1,6 +1,8 @@
-# Defined Types
+Defined Types
+=============
 
-https://docs.puppetlabs.com/learning/definedtypes.html
+[Language: Defined Resource Types](https://docs.puppetlabs.com/puppet/latest/reference/lang_defined_types.html)
+[Learning Puppet - Defined Types](https://docs.puppetlabs.com/learning/definedtypes.html)
 
 Defined types allow you to execute a code in the same way as a class, however multiple times (classes can only be called/executed once).
 
@@ -48,7 +50,7 @@ apache::vhost { "site1":
 
 You will need to make sure that the resource types in the defined type have different names. 
 
-For example, let's say you have the following in the defined type `.pp`:
+For example, let's say you have the following in the defined type `welcome.pp`:
 
 ```puppet
 define base::welcome ($user = $tittle, $content) {
@@ -79,9 +81,7 @@ The fix would be:
 ```puppet
 define base::welcome ($user = $tittle, $content) {
 
-    $welcome_file = "${user}_welcome_file"
-
-    file { $welcome_file:
+    file { $user:
         path    => "/home/${user}/welcome.txt",
         ensure  => file,
         content => $content,

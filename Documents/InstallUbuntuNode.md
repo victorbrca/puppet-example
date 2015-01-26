@@ -1,8 +1,10 @@
-# Install Ubuntu Node
+Install Ubuntu Node
+==================
 
-## Enterprise
+These instructions are for Puppet Enterprise. Puppet Open Source does not include `pe_repo`.
 
-### Enable Ubuntu puppet repo on master
+
+#### Enable Ubuntu puppet repo on master
 
 1- Edit /etc/puppetlabs/puppet/manifests/site.pp
 
@@ -18,7 +20,7 @@ node "puppetmaster.mydomain.com" {
 puppet agent -t
 ```
 
-### Enable SSH and Download Puppet Agent on Node
+#### Enable SSH and Download Puppet Agent on Node
 
 1- Enable root SSH login
 
@@ -34,17 +36,19 @@ service ssh restart
 
 3- Download Puppet Agent
 
-```
-# curl -k https://puppetmaster.mydomain.com:8140/packages/current/install.bash | bash
+```bash
+curl -k https://puppetmaster.mydomain.com:8140/packages/current/install.bash | bash
 ```
 
 or
 
 ```bash
-wget --no-check-certificate https://172.31.100.162:8140/packages/current/install.bash
+wget --no-check-certificate https://puppetmaster.mydomain.com:8140/packages/current/install.bash
 
 bash install.bash
 ```
+
+#### Sign Cert on Master and Run Agent on Node
 
 Find node cert
 
@@ -59,5 +63,9 @@ Sign agent on master
 puppet cert sign ubuntunode.mydomain.com
 ```
 
+Run `puppet agent` on node again, or wait for next run time (dictated by option `runinterval` on agent)
 
+```bash
+puppet agent -t
+```
 

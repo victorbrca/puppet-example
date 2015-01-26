@@ -1,4 +1,5 @@
-﻿# Site.pp
+Site.pp
+========
 
 [Node Definitions](https://docs.puppetlabs.com/puppet/latest/reference/lang_node_definitions.html)
 
@@ -12,7 +13,7 @@
 - If a node matches multiple node definitions via regex, puppet will arbitrary use one of the definitions  
 
 **Node Matching Order**
-- Exact matches 
+- Exact matches
 - Regex
 - FQDN
     - It will remove the last group from the FQDN and try to match "server01.mydomain" (without top level domain ".com")
