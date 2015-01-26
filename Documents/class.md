@@ -40,7 +40,7 @@ class base::users {
 
 ##### Class Declaration
 
-Classes are usually called from the node definition (for example, site.pp) with the include function, or as a class if you are passing parameters (see section for 'Class Parameter' below).
+Classes are usually called from the node definition (for example, site.pp) with the include function, or with a resource like declaration class.
 
 ```puppet
 # /etc/puppet/manifests/site.pp
@@ -51,15 +51,17 @@ node default {
 }
 ```
 
+You can also use `require`, `contain` or `hiera_include` to declare classes.
+
 ##### Naming
 
 - Must begin with a lowercase letter
 - Name can include lowercase letters, numbers and underscores
-- The class names `main` and `settings` cannot be used 
+- The class names `main` and `settings` cannot be used
 
 ### Inheritance
 
-https://docs.puppetlabs.com/puppet/latest/reference/lang_classes.html#inheritance
+[Language: Classes - Inheritance](https://docs.puppetlabs.com/puppet/latest/reference/lang_classes.html#inheritance)
 
 Class inheritance should be avoided. It should be used mainly to avoid repetition of code.
 
@@ -75,7 +77,7 @@ When to use:
 - Override resource attributes
 - Avoid repetition of code
 
-Note: Inheriting a class will also declare it, even if it was not declared
+***Note:*** Inheriting a class will also declare it, even if it was not declared
 
 ```puppet
 # Apache file
@@ -95,6 +97,7 @@ class apache::ssl inherits apache {
     }
 }
 ```
+***Need to review the next 2 examples***
 
 **Example 1:** Calling a local scope variable from another class
 
@@ -104,28 +107,12 @@ class base::params {
 	case $::osfamily {
         'RedHat': { $ssh_name = 'sshd' }
         'Debian': { $ssh_name = 'ssh' }
-        default: { warning('OS not supported by puppet modle SSH') }
+        default: { warning('OS not supported by puppet module SSH') }
     }
 }
 
-
 # manifests/ssh.pp
 class base::ssh {
-    package { 'SSH':
-        name    => 'openssh-server',
-        ensure  => present,
-    }
-
-    file { 'sshd-config':
-        name    => '/etc/ssh/sshd_config',
-        ensure  => file,
-        owner   => 'root',
-        group   => 'root',
-        source  => 'puppet:///modules/base/sshd_config',
-        require => Package['SSH'],
-        notify  => Service['ssh-service-name-two'],
-    }
-
     service { 'sshd':
         name    => $base::params::ssh_name,
         ensure  => running,
@@ -153,28 +140,13 @@ class base::params {
     case $::osfamily {
         'RedHat': { $ssh_name = 'sshd' }
         'Debian': { $ssh_name = 'ssh' }
-        default: { warning('OS not supported by puppet modle SSH') }
+        default: { warning('OS not supported by puppet module SSH') }
     }
 }
 
 
 # manifests/ssh.pp
 class base::ssh inherits base::params {
-    package { 'SSH':
-        name    => 'openssh-server',
-        ensure  => present,
-    }
-
-    file { 'sshd-config':
-        name    => '/etc/ssh/sshd_config',
-        ensure  => file,
-        owner   => 'root',
-        group   => 'root',
-        source  => 'puppet:///modules/base/sshd_config',
-        require => Package['SSH'],
-        notify  => Service['ssh-service-name-two'],
-    }
-
     service { 'sshd':
         name    => $base::params::ssh_name,
         ensure  => running,
@@ -184,10 +156,10 @@ class base::ssh inherits base::params {
 }
 ```
 
-No need for `include base::params` in the main `site.pp`.
+No need to use `include base::params` in the main `site.pp`.
 
 ```puppet
-# ../../manifests/site.pp 
+# ../../manifests/site.pp
 node "xyz" {
     include base::ssh
 }
@@ -197,8 +169,9 @@ node "xyz" {
 
 Lets the class ask for data to be passed in at the time that it’s declared, and it can use that data as normal variables throughout its definition.
 
+**Example 1:** In this example, the value of `$parameter_one`  gets set when `myclass` is eventually declared.
+
 ```puppet
-# In this example, $parameter's value gets set when `myclass` is eventually declared.
 # Class definition:
 class myclass ($parameter_one = "default text") {
     file {'/tmp/foo':
@@ -213,7 +186,7 @@ The automatic parameter lookup also works with Hiera. It will populate date in t
 - Does a hiera lookup for `<CLASS NAME>::<PARAMETER NAME>`
 - Uses the default parameter if defined in the class
 
-**Example 1:** Define requirements within a class
+**Example 2:** Define requirements within a class
 
 On this example, the parameter `$ntppackage` is defined as required and has its default value from the variable `$package_name` in `ntp::params`:
 
@@ -264,36 +237,50 @@ class ntp ($ntppackage => $ntppackage) inherits ntp::params {
 
 ### Examples of class parameters and scopes
 
-This will work (`Notice: Value is 1`)
+**Example 1:** This will work and will output `Notice: Value is 1`.
+
 ```puppet
+# site.pp
+node default {
+	class { 'classparameter': }
+}
+
+# classparameter.pp
 class classparameter ($value = "1") {
     notify { "Value is $value": }
 }
 ```
 
-This will fail with `Cannot reassign variable value`
+**Example 2:** Will fail with `Cannot reassign variable value`
 
 ```puppet
+# site.pp
+node default {
+	class { 'classparameter': }
+}
+
+# classparameter.pp
 class classparameter ($value = "1") {
     $value = "2"
     notify { "Value is $value": }
 }
 ```
 
-This will work (`Notice: Value is 0`)
+**Example 3:** Will work and output will be `Notice: Value is 0`
 
 ```puppet
-class classparameter ($value = "1") {
-    notify { "Value is $value": }
-}
-
 # site.pp
 node default {
 	class { 'classparameter': value => "0" }
 }
+
+# classparameter.pp
+class classparameter ($value = "1") {
+    notify { "Value is $value": }
+}
 ```
 
-Assigning a variable outside of the node declaration will result in a top scope variable. 
+**Example 4a:** Assigning a variable outside of the node declaration will result in a top scope variable.
 
 ```
 Notice: Value is 1
@@ -301,32 +288,39 @@ Notice: Value_top is 0
 ```
 
 ```
+# site.pp
+$value = "0"
+node default {
+	class { 'classparameter': }
+}
+
+# classparameter.pp
 class classparameter ($value = "1") {
         $value_top = $::value
         notify { "Value is $value": }
         notify { "Value_top is $value_top": }
 
 }
-
-# site.pp
-$value = "0"
-node default {
-	class { 'classparameter': value => "0" }
-}
 ```
 
-However adding the variable to the node definition will result in not being a top scope variable.
+Output will be:
+
+```
+Notice: Value is 1
+Notice: Value_top is 0
+```
+
+**Example 4b:** However adding the variable to the node definition will result in not being a top scope variable.
+
+```puppet
+# site.pp
+node default {
+    $value = "0"
+	class { 'classparameter': }
+}
+```
 
 ```
 Notice: Value is 1
 Notice: Value_top is
-```
-
-```puppet
-# site.pp
-
-node default {
-    $value = "0"
-	class { 'classparameter': value => "0" }
-}
 ```

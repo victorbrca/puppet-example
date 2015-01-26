@@ -1,21 +1,40 @@
-﻿# Facter
+Facter
+=======
+[Facter 2.3: Documentation Index](https://docs.puppetlabs.com/facter/2.3/)
+[List of core facts](Facter 2.3: Documentation Index)
 
-Gathers system information that can be used by Puppet (like when creating a class)
+Gathers node system information that can be used by Puppet. It discovers and reports per-node facts, which are available in your Puppet manifests as variables.
 
-```
-# facter osfamily
+Facter assigns these values to variables, which are accessible to puppet as top scope variables.
+
+```bash
+$ facter osfamily
 RedHat
 ```
 
-```
-# facter | grep mem
+```bash
+$ facter | grep mem
 memoryfree => 531.05 MB
 memoryfree_mb => 531.05
 memorysize => 590.26 MB
 memorysize_mb => 590.26
 ```
 
-## Custom Facts
+**Example:** Case statement using facter variable
+
+```puppet
+case $::osfamily {
+    'RedHat': {
+        $ssh_name = ' sshd'
+    }
+    'Debian': {
+        $ssh_name = 'ssh'
+    }
+}
+```
+
+Custom Facts
+------------
 
 [Facter 2.3: Custom Facts Walkthrough](https://docs.puppetlabs.com/facter/2.3/custom_facts.html)
 
@@ -37,7 +56,8 @@ Facter.add('hardware_platform') do
 end
 ```
 
-## External Facts
+External Facts
+--------------
 
 Enables scripts written in other languages to be executed on the node (during an agent run) and load fact data. The best way to distribute external facts is with pluginsync.
 
@@ -57,3 +77,7 @@ key1=value1
 key2=value2
 key3=value3
 ```
+
+
+
+facter -p

@@ -1,10 +1,10 @@
-﻿# DSL - Domain Specific Language
+DSL - Domain Specific Language
+=============================
 
+Variables
+----------
 
-
-## Variables
-
-https://docs.puppetlabs.com/puppet/latest/reference/lang_variables.html
+[Language: Variables](https://docs.puppetlabs.com/puppet/latest/reference/lang_variables.html)
 
 - Are constants and cannot be reassigned a value within the given scope (however they can be re-assigned in a different scope level)
 - Variable names are case-sensitive and can include alphanumeric characters and underscores. Dashes should NOT be used, and the variable name `$string` is reserved. Puppet 3.7 deprecates the use of variable names starting with uppercase letters.
@@ -140,8 +140,8 @@ include base::params
 include base::ssh
 ```
 
-
-## Conditional Statements
+Conditional Statements
+----------------------
 
 [Language: Conditional Statements](https://docs.puppetlabs.com/puppet/latest/reference/lang_conditional.html)
 
@@ -347,10 +347,10 @@ package { 'resource-title':
 }
 ```
 
-## Functions
+Functions
+-------------
 
 [Language: Functions](https://docs.puppetlabs.com/puppet/latest/reference/lang_functions.html)
-
 [Function Reference](https://docs.puppetlabs.com/references/latest/function.html)
 
 Functions are pre-defined chunks of Ruby code which run during compilation. Most functions either return values or modify the catalog.
@@ -398,7 +398,8 @@ Statements stand on their own and do not return arguments; they are used for per
 https://docs.puppetlabs.com/guides/custom_functions.html
 
 
-## Resource Collectors
+Resource Collectors
+-------------------
 
 [Language: Resource Collectors](https://docs.puppetlabs.com/puppet/latest/reference/lang_collectors.html)
 
